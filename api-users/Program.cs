@@ -23,11 +23,11 @@ class Program
 
         var url = "https://jsonplaceholder.typicode.com/users";
 
-        using var Client = new HttpClient();
+        using var client = new HttpClient();
 
         try
         {
-            var response = await Client.GetAsync(url);
+            var response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
@@ -39,23 +39,28 @@ class Program
 
             if (users != null)
             {
-                var SimpleUsers = new List<SimpleUser>();
+                var simpleUsers = new List<SimpleUser>();
+
+                int bizCount = 0;
 
                 foreach (var user in users)
                 {
                     if (user.email.Contains(".biz"))
                     {
-                        Console.WriteLine($"Emails that contains .biz: {user.email}");
+                        Console.WriteLine($"Eposter som inneholder .biz: {user.email}");
+                        bizCount++;
                     }
 
-                    SimpleUsers.Add(new SimpleUser
+                    simpleUsers.Add(new SimpleUser
                     {
                         Name = user.name,
                         Email = user.email
                     });
                 }
 
-                var outputJson = JsonSerializer.Serialize(SimpleUsers, new JsonSerializerOptions
+                Console.WriteLine($"\nTotalt antall eposter som inneholder .biz: {bizCount}");
+
+                var outputJson = JsonSerializer.Serialize(simpleUsers, new JsonSerializerOptions
                 {
                     WriteIndented = true
                 });
