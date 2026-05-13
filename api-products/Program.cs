@@ -2,6 +2,8 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Reflection;
+using System.Linq;
 
 public class Product
 {
@@ -41,13 +43,11 @@ class Program
             {
                 var simpleProducts = new List<SimpleProduct>();
 
-                int electronicsCount = 0;
-
                 foreach (var product in products)
                 {
-                    if (product.price < 100)
+                    if (product.price < 100 || product.category == "electronics")
                     {
-                        Console.WriteLine($"Produkter under 100 kr: {product.title} - {product.price} kr");
+                        Console.WriteLine($"Eksporterer produkt: {product.title} - {product.price} kr");
 
                         simpleProducts.Add(new SimpleProduct
                         {
@@ -55,15 +55,11 @@ class Program
                             Price = product.price
                         });
                     }
-
-                    if (product.category == "electronics")
-                    {
-                        Console.WriteLine($"Elektronikk produkt: {product.title}");
-                        electronicsCount++;
-                    }
-
-                    //Console.WriteLine($"{product.title} - {product.price} kr"); 
                 }
+
+                simpleProducts = simpleProducts
+                    .OrderBy(p => p.Price)
+                    .ToList();
 
                 var outputJson = JsonSerializer.Serialize(simpleProducts, new JsonSerializerOptions
                 {
@@ -71,7 +67,6 @@ class Program
                 });
 
                 await File.WriteAllTextAsync("products.json", outputJson);
-                Console.WriteLine($"Antall elektronikk produkter: {electronicsCount}");
                 Console.WriteLine("\nproducts.json er lagret");
             }
         }
